@@ -43,6 +43,8 @@ func main() {
 			start := strings.Index(s, search)
 			text := color.Red(search)
 			fmt.Printf("%s%s%s\n", s[:start], text, s[start+len(search):])
+		} else {
+			fmt.Println(s)
 		}
 	}
 
