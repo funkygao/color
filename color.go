@@ -14,7 +14,7 @@ var (
 	search string
 	color  string = "red"
 
-	colorTable = map[string]func(string) string{
+	colorTable = map[string]func(string, ...interface{}) string{
 		"red":    c.Red,
 		"blue":   c.Blue,
 		"green":  c.Green,
