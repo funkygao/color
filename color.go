@@ -2,27 +2,38 @@ package main
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
-	"github.com/funkygao/golib/color"
+	c "github.com/funkygao/golib/color"
 	"github.com/funkygao/golib/io"
+	_io "io"
 	"os"
 	"strings"
 )
 
 var (
-	search  string
-	colored string
+	search string
+	color  string = "red"
+
+	colorTable = map[string]func(string) string{
+		"red":    c.Red,
+		"blue":   c.Blue,
+		"green":  c.Green,
+		"yellow": c.Yellow,
+	}
 )
 
 func init() {
-	flag.StringVar(&search, "s", "", "search text")
-	flag.StringVar(&colored, "c", "", "color")
-	flag.Parse()
-	if search == "" {
-		fmt.Println("search and color required")
+	if len(os.Args) < 2 {
+		fmt.Printf("Usage: %s text [color]\ncolor: red | blue | green | yellow\n",
+			os.Args[0])
 		os.Exit(0)
 	}
+
+	search = os.Args[1]
+	if len(os.Args) > 2 {
+		color = os.Args[2]
+	}
+
 }
 
 func main() {
@@ -31,21 +42,30 @@ func main() {
 	for {
 		line, err := io.ReadLine(reader)
 		if err != nil {
-			if err.Error() != "EOF" {
+			if err != _io.EOF {
 				fmt.Println(err)
 			}
 
-			os.Exit(1)
+			break
 		}
 
 		s := string(line)
 		if strings.Contains(s, search) {
 			start := strings.Index(s, search)
-			text := color.Red(search)
+			text := colored(color, search)
 			fmt.Printf("%s%s%s\n", s[:start], text, s[start+len(search):])
 		} else {
 			fmt.Println(s)
 		}
 	}
 
+}
+
+func colored(c, s string) string {
+	if f, present := colorTable[c]; present {
+		return f(s)
+	}
+
+	// invalid color
+	return s
 }
